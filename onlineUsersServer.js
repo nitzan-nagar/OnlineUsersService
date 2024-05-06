@@ -33,8 +33,8 @@ io.on("connection", (socket) => {
             activeUsers[socket.id] = username;
             io.emit("updateActiveUsers", Object.values(activeUsers)); 
         }
-        if(offlineUsers[socket.id]){
-            delete offlineUsers[socket.id];
+        if(offlineUsers[username]) {
+            delete offlineUsers[username];
             io.emit("updateOfflineUsers", Object.values(offlineUsers));
         }
         
@@ -43,8 +43,8 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         const username = activeUsers[socket.id]
         console.log(`${username} is now offline`)
-        if (!offlineUsers[socket.id] && !Object.values(offlineUsers).includes(username)) {
-            offlineUsers[socket.id] = username;
+        if (!offlineUsers[username] && !Object.values(offlineUsers).includes(username)) {
+            offlineUsers[username] = username;
             io.emit("updateOfflineUsers", Object.values(offlineUsers)); 
         }
         if(username) {
