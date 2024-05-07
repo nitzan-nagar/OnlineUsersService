@@ -28,7 +28,10 @@ io.on("connection", (socket) => {
     console.log(`${socket.id} is connected`);
 
     socket.on("join", (username) => {
+
         console.log(`${username} is now online`);
+        socket.broadcast.emit("UserJoined", username);
+
         if (!activeUsers[socket.id] && !Object.values(activeUsers).includes(username)) {
             activeUsers[socket.id] = username;
             io.emit("updateActiveUsers", Object.values(activeUsers)); 
@@ -41,9 +44,12 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
+        
         const username = activeUsers[socket.id]
         console.log(`${username} is now offline`)
-        if (!offlineUsers[username] && !Object.values(offlineUsers).includes(username)) {
+        socket.broadcast.emit("UserLeft", username);
+
+        if (username &&!offlineUsers[username] && !Object.values(offlineUsers).includes(username)) {
             offlineUsers[username] = username;
             io.emit("updateOfflineUsers", Object.values(offlineUsers)); 
         }
