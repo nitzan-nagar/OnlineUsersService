@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server as socketIO } from "socket.io";
+import { log } from "console";
 
 const PORT = process.env.PORT || 3002;
 
@@ -42,6 +43,14 @@ io.on("connection", (socket) => {
         }
         
     })
+
+    socket.on('sentGameRequest', ({sender, opponent}) =>{
+       const opponentSocketId = Object.keys(activeUsers).find(
+        socketId => activeUsers[socketId] === opponent
+    );
+    if (opponentSocketId) {
+        io.to(opponentSocketId).emit('gameRequest', sender);
+    }});
 
     socket.on("disconnect", () => {
         
